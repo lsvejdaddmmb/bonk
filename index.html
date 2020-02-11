@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Bonk</title>
+    <script>
+        let cnv,ctx;
+        let x = 200;
+        let y = 100;
+        let img = new Image();
+        img.src = "http://dl.damto.cz/mimon.png";
+        function kresli() {
+            cnv = document.getElementById("platno");
+            ctx = cnv.getContext("2d");
+
+            ctx.clearRect(0,0,cnv.width,cnv.height);
+
+            ctx.beginPath();
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = "red";
+            ctx.moveTo(0,0);
+            ctx.lineTo(100,100);
+            ctx.lineTo(100,300);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "blue";
+            ctx.arc(cnv.width/2,cnv.height/2,20,0,2*3.14);
+            ctx.stroke();
+
+            if (moveLeft) {
+                x = x - 1;
+            }
+            if (moveRight) {
+                x = x + 1;
+            }
+            if (moveUp) {
+                y = y - 1;
+            }
+            if (moveDown) {
+                y = y + 1;
+            }
+            ctx.beginPath();
+            ctx.lineWidth = 1;
+            ctx.fillStyle = "green";
+            ctx.arc(x,y,20,0,2*3.14);
+            ctx.fill();
+
+            ctx.drawImage(img, 400,100,50,50);
+        }
+        let moveUp,moveDown,moveRight,moveLeft;
+        function onKeyDown(event) {
+            if (event.key === "ArrowUp") {
+                moveUp = true;
+            }
+            if (event.key === "ArrowDown") {
+                moveDown = true;
+            }
+            if (event.key === "ArrowLeft") {
+                moveLeft = true;
+            }
+            if (event.key === "ArrowRight") {
+                moveRight = true;
+            }
+        }
+        function onKeyUp(event) {
+            if (event.key === "ArrowUp") {
+                moveUp = false;
+            }
+            if (event.key === "ArrowDown") {
+                moveDown = false;
+            }
+            if (event.key === "ArrowLeft") {
+                moveLeft = false;
+            }
+            if (event.key === "ArrowRight") {
+                moveRight = false;
+            }
+        }
+        function poNacteni() {
+            setInterval(kresli, 10);
+        }
+    </script>
+</head>
+<body onload="poNacteni()" onkeydown="onKeyDown(event)" onkeyup="onKeyUp(event)">
+
+<canvas id="platno" width="800" height="600" style="background-color: silver"></canvas>
+
+</body>
+</html>
