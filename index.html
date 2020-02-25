@@ -7,8 +7,17 @@
         let cnv,ctx;
         let x = 200;
         let y = 100;
+        let xPosl = -1;
+        let yPosl = -1;
+        let draha = new Array();
         let img = new Image();
         img.src = "http://dl.damto.cz/mimon.png";
+        function vzdalenostBodu(bod1, bod2) {
+            let xRozd = Math.abs(bod1.x - bod2.x);
+            let yRozd = Math.abs(bod1.y - bod2.y);
+            let vzdal = Math.sqrt(xRozd*xRozd + yRozd*yRozd);
+            return vzdal;
+        }
         function kresli() {
             cnv = document.getElementById("platno");
             ctx = cnv.getContext("2d");
@@ -41,11 +50,37 @@
             if (moveDown) {
                 y = y + 1;
             }
-            ctx.beginPath();
-            ctx.lineWidth = 1;
-            ctx.fillStyle = "green";
-            ctx.arc(x,y,20,0,2*3.14);
-            ctx.fill();
+            if (x != xPosl || y != yPosl) { //zmenila se pozice postavy
+                let obj = {};
+                obj.x = x;
+                obj.y = y;
+                draha.unshift(obj); //vklada vzdy na zacatek seznamu
+                xPosl = x; //posledni ulozenou pozici x musim nastavit na tu aktualni
+                yPosl = y; //posledni ulozenou pozici y musim nastavit na tu aktualni
+            }
+            for (let bod of draha) {
+                ctx.beginPath();
+                ctx.lineWidth = 1;
+                ctx.fillStyle = "green";
+                ctx.arc(bod.x,bod.y,1,0,2*3.14);
+                ctx.fill();
+            }
+            let bodPredch = {x:-1000,y:-1000}; //nastavim nekam hodne mimo, aby prvni porovnani vzdalenosti bylo velke
+            let pocetTelicek = 5;
+            for (let bod of draha) {
+                if (vzdalenostBodu(bod, bodPredch) > 36) {
+                    ctx.beginPath();
+                    ctx.lineWidth = 1;
+                    ctx.fillStyle = "green";
+                    ctx.arc(bod.x,bod.y,20,0,2*3.14);
+                    ctx.fill();
+                    bodPredch = bod;
+                    pocetTelicek--;
+                    if (pocetTelicek == 0) {
+                        break;
+                    }
+                }
+            }
 
             ctx.drawImage(img, 300,200,50,50);
         }
