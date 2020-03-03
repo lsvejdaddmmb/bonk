@@ -7,6 +7,7 @@
         let cnv,ctx;
         let x = 200;
         let y = 100;
+        let rotace = 0;
         let xPosl = -1;
         let yPosl = -1;
         let draha = new Array();
@@ -58,15 +59,16 @@
                 xPosl = x; //posledni ulozenou pozici x musim nastavit na tu aktualni
                 yPosl = y; //posledni ulozenou pozici y musim nastavit na tu aktualni
             }
-            for (let bod of draha) {
-                ctx.beginPath();
-                ctx.lineWidth = 1;
-                ctx.fillStyle = "green";
-                ctx.arc(bod.x,bod.y,1,0,2*3.14);
-                ctx.fill();
-            }
+            // for (let bod of draha) {
+            //     ctx.beginPath();
+            //     ctx.lineWidth = 1;
+            //     ctx.fillStyle = "green";
+            //     ctx.arc(bod.x,bod.y,1,0,2*3.14);
+            //     ctx.fill();
+            // }
             let bodPredch = {x:-1000,y:-1000}; //nastavim nekam hodne mimo, aby prvni porovnani vzdalenosti bylo velke
             let pocetTelicek = 5;
+            let kresliText = true;
             for (let bod of draha) {
                 if (vzdalenostBodu(bod, bodPredch) > 36) {
                     ctx.beginPath();
@@ -74,6 +76,15 @@
                     ctx.fillStyle = "green";
                     ctx.arc(bod.x,bod.y,20,0,2*3.14);
                     ctx.fill();
+
+                    if (kresliText) {
+                        ctx.lineWidth = 1;
+                        ctx.fillStyle = "black";
+                        ctx.font = "16px Consolas";
+                        ctx.fillText("bobicek", bod.x,bod.y);
+                        kresliText = false;
+                    }
+
                     bodPredch = bod;
                     pocetTelicek--;
                     if (pocetTelicek == 0) {
@@ -83,23 +94,46 @@
             }
 
             ctx.drawImage(img, 300,200,50,50);
+
+            ctx.lineWidth = 1;
+            ctx.fillStyle = "yellow";
+            ctx.font = "120px Consolas";
+            ctx.save();
+            rotace = rotace + 0.01;
+            ctx.translate(300,200);
+            ctx.rotate(rotace);
+            ctx.fillText("mimon", 0,0);
+            ctx.restore();
         }
         let moveUp,moveDown,moveRight,moveLeft;
         function onKeyDown(event) {
             if (event.key === "ArrowUp") {
                 moveUp = true;
+                // moveDown = false;
+                // moveLeft = false;
+                // moveRight = false;
             }
             if (event.key === "ArrowDown") {
                 moveDown = true;
+                // moveUp = false;
+                // moveLeft = false;
+                // moveRight = false;
             }
             if (event.key === "ArrowLeft") {
                 moveLeft = true;
+                // moveRight = false;
+                // moveDown = false;
+                // moveUp = false;
             }
             if (event.key === "ArrowRight") {
                 moveRight = true;
+                // moveLeft = false;
+                // moveDown = false;
+                // moveUp = false;
             }
         }
         function onKeyUp(event) {
+            // return;
             if (event.key === "ArrowUp") {
                 moveUp = false;
             }
