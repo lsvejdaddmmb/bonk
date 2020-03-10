@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <title>Bonk</title>
     <script>
+        const R = 20; //polomer kolecka hlavicky postavy
         let cnv,ctx;
         let x = 200;
         let y = 100;
+        let prezdivka = "";
+        let barvaHrace = "#008000";
         let rotace = 0;
         let xPosl = -1;
         let yPosl = -1;
@@ -18,6 +21,10 @@
             let yRozd = Math.abs(bod1.y - bod2.y);
             let vzdal = Math.sqrt(xRozd*xRozd + yRozd*yRozd);
             return vzdal;
+        }
+        function nastavHrace() {
+            prezdivka = document.getElementById("prezdivka").value;
+            barvaHrace = document.getElementById("barva").value;
         }
         function kresli() {
             cnv = document.getElementById("platno");
@@ -51,6 +58,20 @@
             if (moveDown) {
                 y = y + 1;
             }
+            //kontrola okraju
+            if (x < R) {
+                x = cnv.width - R;
+            }
+            if (x > cnv.width - R) {
+                x = R;
+            }
+            if (y < R) {
+                y = cnv.height - R;
+            }
+            if (y > cnv.height - R) {
+                y = R;
+            }
+            //pridani pozice do historie
             if (x != xPosl || y != yPosl) { //zmenila se pozice postavy
                 let obj = {};
                 obj.x = x;
@@ -73,15 +94,15 @@
                 if (vzdalenostBodu(bod, bodPredch) > 36) {
                     ctx.beginPath();
                     ctx.lineWidth = 1;
-                    ctx.fillStyle = "green";
-                    ctx.arc(bod.x,bod.y,20,0,2*3.14);
+                    ctx.fillStyle = barvaHrace;
+                    ctx.arc(bod.x,bod.y,R,0,2*3.14);
                     ctx.fill();
 
                     if (kresliText) {
                         ctx.lineWidth = 1;
                         ctx.fillStyle = "black";
                         ctx.font = "16px Consolas";
-                        ctx.fillText("bobicek", bod.x,bod.y);
+                        ctx.fillText(prezdivka, bod.x,bod.y);
                         kresliText = false;
                     }
 
@@ -166,7 +187,14 @@
 
 <input type="text" id="zprava">
 <input type="button" value="pošli" onclick="posli()">
-<br>
+<br><br>
+
+
+Přezdívka:
+<input type="text" id="prezdivka">
+<input type="color" id="barva" value="#008000">
+<input type="button" value="nastav" onclick="nastavHrace()">
+<br><br>
 
 <canvas id="platno" width="800" height="600" style="background-color: silver"></canvas>
 
