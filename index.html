@@ -32,20 +32,6 @@
 
             ctx.clearRect(0,0,cnv.width,cnv.height);
 
-            ctx.beginPath();
-            ctx.lineWidth = 5;
-            ctx.strokeStyle = "red";
-            ctx.moveTo(0,0);
-            ctx.lineTo(100,100);
-            ctx.lineTo(100,300);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = "blue";
-            ctx.arc(cnv.width/2,cnv.height/2,20,0,2*3.14);
-            ctx.stroke();
-
             if (moveLeft) {
                 x = x - 1;
             }
@@ -71,60 +57,16 @@
             if (y > cnv.height - R) {
                 y = R;
             }
-            //pridani pozice do historie
-            if (x != xPosl || y != yPosl) { //zmenila se pozice postavy
-                let obj = {};
-                obj.x = x;
-                obj.y = y;
-                draha.unshift(obj); //vklada vzdy na zacatek seznamu
-                xPosl = x; //posledni ulozenou pozici x musim nastavit na tu aktualni
-                yPosl = y; //posledni ulozenou pozici y musim nastavit na tu aktualni
-            }
-            // for (let bod of draha) {
-            //     ctx.beginPath();
-            //     ctx.lineWidth = 1;
-            //     ctx.fillStyle = "green";
-            //     ctx.arc(bod.x,bod.y,1,0,2*3.14);
-            //     ctx.fill();
-            // }
-            let bodPredch = {x:-1000,y:-1000}; //nastavim nekam hodne mimo, aby prvni porovnani vzdalenosti bylo velke
-            let pocetTelicek = 5;
-            let kresliText = true;
-            for (let bod of draha) {
-                if (vzdalenostBodu(bod, bodPredch) > 36) {
-                    ctx.beginPath();
-                    ctx.lineWidth = 1;
-                    ctx.fillStyle = barvaHrace;
-                    ctx.arc(bod.x,bod.y,R,0,2*3.14);
-                    ctx.fill();
-
-                    if (kresliText) {
-                        ctx.lineWidth = 1;
-                        ctx.fillStyle = "black";
-                        ctx.font = "16px Consolas";
-                        ctx.fillText(prezdivka, bod.x,bod.y);
-                        kresliText = false;
-                    }
-
-                    bodPredch = bod;
-                    pocetTelicek--;
-                    if (pocetTelicek == 0) {
-                        break;
-                    }
-                }
-            }
-
-            ctx.drawImage(img, 300,200,50,50);
+            ctx.beginPath();
+            ctx.lineWidth = 1;
+            ctx.fillStyle = barvaHrace;
+            ctx.arc(x,y,R,0,2*3.14);
+            ctx.fill();
 
             ctx.lineWidth = 1;
-            ctx.fillStyle = "yellow";
-            ctx.font = "120px Consolas";
-            ctx.save();
-            rotace = rotace + 0.01;
-            ctx.translate(300,200);
-            ctx.rotate(rotace);
-            ctx.fillText("mimon", 0,0);
-            ctx.restore();
+            ctx.fillStyle = "black";
+            ctx.font = "16px Consolas";
+            ctx.fillText(prezdivka, x + R,y + R);
         }
         let moveUp,moveDown,moveRight,moveLeft;
         function onKeyDown(event) {
@@ -177,23 +119,14 @@
         connection.onmessage = e => {
             console.log(e.data);
         };
-        function posli() {
-            let z = document.getElementById("zprava").value;
-            connection.send(z);
-        }
     </script>
 </head>
 <body onload="poNacteni()" onkeydown="onKeyDown(event)" onkeyup="onKeyUp(event)">
 
-<input type="text" id="zprava">
-<input type="button" value="pošli" onclick="posli()">
-<br><br>
-
-
 Přezdívka:
 <input type="text" id="prezdivka">
 <input type="color" id="barva" value="#008000">
-<input type="button" value="nastav" onclick="nastavHrace()">
+<input type="button" value="Připojit se" onclick="nastavHrace()">
 <br><br>
 
 <canvas id="platno" width="800" height="600" style="background-color: silver"></canvas>
