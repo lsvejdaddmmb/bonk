@@ -4,27 +4,30 @@
     <meta charset="UTF-8">
     <title>Bonk</title>
     <script>
-        const R = 20; //polomer kolecka hlavicky postavy
+        const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
+        const R = 20; //polomer kolecka  postavy
         let cnv,ctx;
         let x = 200;
         let y = 100;
         let prezdivka = "";
         let barvaHrace = "#008000";
-        let rotace = 0;
-        let xPosl = -1;
-        let yPosl = -1;
-        let draha = new Array();
-        let img = new Image();
-        img.src = "http://dl.damto.cz/mimon.png";
         function vzdalenostBodu(bod1, bod2) {
             let xRozd = Math.abs(bod1.x - bod2.x);
             let yRozd = Math.abs(bod1.y - bod2.y);
             let vzdal = Math.sqrt(xRozd*xRozd + yRozd*yRozd);
             return vzdal;
         }
+        let uid;
         function nastavHrace() {
             prezdivka = document.getElementById("prezdivka").value;
             barvaHrace = document.getElementById("barva").value;
+            let url = HOST + "/novyhrac?j="+prezdivka+"&b="+barvaHrace.substr(1); //neprenasime znak # z barvy
+            fetch(url).then(function(response) {
+                response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                    uid = obj.uid;
+                });
+            });
         }
         function kresli() {
             cnv = document.getElementById("platno");
@@ -121,7 +124,7 @@
         };
     </script>
 </head>
-<body onload="poNacteni()" onkeydown="onKeyDown(event)" onkeyup="onKeyUp(event)">
+<body onkeydown="onKeyDown(event)" onkeyup="onKeyUp(event)">
 
 Přezdívka:
 <input type="text" id="prezdivka">
