@@ -4,12 +4,22 @@ const url = require("url");
 const uniqid = require("uniqid");
 
 let hraci = new Array();
+let hracBaba;
 
 function vzdalenostBodu(bod1, bod2) {
     let xRozd = Math.abs(bod1.x - bod2.x);
     let yRozd = Math.abs(bod1.y - bod2.y);
-    let vzdal = Math.sqrt(xRozd*xRozd + yRozd*yRozd);
+    let vzdal = Math.sqrt(xRozd*xRozd + yRozd*yRozd); //Pythagorova veta
     return vzdal;
+}
+
+let casImunity = 0;
+function aktCasMs() {
+    let dt = new Date();
+    return dt.getTime();
+}
+function nastavImunitu() {
+    casImunity = aktCasMs() + 2000; //2s imunita
 }
 
 function main(req, res) {
@@ -32,6 +42,9 @@ function main(req, res) {
         hrac.jmeno = q.query.j;
         hrac.barva = "#" + q.query.b;
         hraci.push(hrac);
+        if (hrac.baba) {
+            hracBaba = hrac;
+        }
     } else {
         res.writeHead(404);
         res.end();
@@ -53,19 +66,61 @@ wss.on('connection', ws => {
         let posunuti = JSON.parse(message);
         for (let hrac of hraci) {
             if (posunuti.uid == hrac.uid) { //vyhleda prislusneho hrace
+                let v = 1;
+                if (hrac.baba) {
+                    v = 1.2;
+                }
                 if (posunuti.left) {
-                    hrac.x = hrac.x - 1;
+                    hrac.x = hrac.x - v;
                 }
                 if (posunuti.right) {
-                    hrac.x = hrac.x + 1;
+                    hrac.x = hrac.x + v;
                 }
                 if (posunuti.up) {
-                    hrac.y = hrac.y - 1;
+                    hrac.y = hrac.y - v;
                 }
                 if (posunuti.down) {
-                    hrac.y = hrac.y + 1;
+                    hrac.y = hrac.y + v;
                 }
-                //TODO kontrola predani baby s vyuzitim fce vzdalenostBodu
+                //kontrola okraju
+                if (hrac.x < hrac.r) {
+                    hrac.x = hrac.r;
+                }
+                if (hrac.x > cnv.width - hrac.r) {
+                    hrac.x = cnv.width - hrac.r;
+                }
+                if (hrac.y < hrac.r) {
+                    hrac.y = hrac.r;
+                }
+                if (hrac.y > cnv.height - hrac.r) {
+                    hrac.y = cnv.height - hrac.r;
+                }
+                //pokud je baba v imunite, tak se kontrola predani baby nedela
+                if (aktCasMs() < casImunity) {
+                    break;
+                }
+                //kontrola predani baby s vyuzitim fce vzdalenostBodu
+                if (hrac.baba) {
+                    for (let h of hraci) { //kontroluju proti vsem hracum
+                        if (h.uid != hrac.uid) { //nesmim kontrolovat proti stejnemu hraci
+                            let d = vzdalenostBodu(hrac, h);
+                            if (d <= hrac.r + h.r) {
+                                hrac.baba = false; //hrac, se kterym jsem posunul, mel babu, takze ji nebude mit
+                                h.baba = true; //a bude ji mit tento hrac
+                                hracBaba = h; //...proto ho nastavim do promenne hracBaba
+                                nastavImunitu();
+                            }
+                        }
+                    }
+                } else {
+                    let d = vzdalenostBodu(hrac, hracBaba);
+                    if (d <= hrac.r + hracBaba.r) {
+                        hracBaba.baba = false;
+                        hrac.baba = true;
+                        hracBaba = hrac;
+                        nastavImunitu();
+                    }
+                }
                 break;
             }
         }
