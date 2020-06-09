@@ -86,14 +86,14 @@ wss.on('connection', ws => {
                 if (hrac.x < hrac.r) {
                     hrac.x = hrac.r;
                 }
-                if (hrac.x > cnv.width - hrac.r) {
-                    hrac.x = cnv.width - hrac.r;
+                if (hrac.x > 800 - hrac.r) {
+                    hrac.x = 800 - hrac.r;
                 }
                 if (hrac.y < hrac.r) {
                     hrac.y = hrac.r;
                 }
-                if (hrac.y > cnv.height - hrac.r) {
-                    hrac.y = cnv.height - hrac.r;
+                if (hrac.y > 600 - hrac.r) {
+                    hrac.y = 600 - hrac.r;
                 }
                 //pokud je baba v imunite, tak se kontrola predani baby nedela
                 if (aktCasMs() < casImunity) {
