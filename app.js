@@ -4,7 +4,7 @@ const url = require("url");
 const uniqid = require("uniqid");
 
 let hraci = new Array();
-let hracBaba;
+let hracBaba = undefined;
 
 function vzdalenostBodu(bod1, bod2) {
     let xRozd = Math.abs(bod1.x - bod2.x);
@@ -38,6 +38,7 @@ function main(req, res) {
         hrac.y = 100;
         hrac.r = 10;
         hrac.baba = (hraci.length == 0);
+        hrac.casBaby = 0;
         console.log(q.query);
         hrac.jmeno = q.query.j;
         hrac.barva = "#" + q.query.b;
@@ -138,3 +139,10 @@ function broadcast() {
     });
 }
 setInterval(broadcast, 10);
+
+function prictiCasBaby() {
+    if (hracBaba) {
+        hracBaba.casBaby++;
+    }
+}
+setInterval(prictiCasBaby, 1000);
