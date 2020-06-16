@@ -39,6 +39,7 @@ function main(req, res) {
         hrac.r = 10;
         hrac.baba = (hraci.length == 0);
         hrac.casBaby = 0;
+        hrac.poslPosun = aktCasMs();
         console.log(q.query);
         hrac.jmeno = q.query.j;
         hrac.barva = "#" + q.query.b;
@@ -67,6 +68,7 @@ wss.on('connection', ws => {
         let posunuti = JSON.parse(message);
         for (let hrac of hraci) {
             if (posunuti.uid == hrac.uid) { //vyhleda prislusneho hrace
+                hrac.poslPosun = aktCasMs();
                 let v = 1;
                 if (hrac.baba) {
                     v = 1.2;
@@ -146,3 +148,22 @@ function prictiCasBaby() {
     }
 }
 setInterval(prictiCasBaby, 1000);
+
+
+function vyradNeaktivniHrace() {
+    let predejBabu = false;
+    for (let i = hraci.length-1; i >= 0; i--) { //od posledniho hrace v seznamu k prvnimu, abych mohl hrace v cyklu ze seznamu vyradit
+        let hrac = hraci[i];
+        if (aktCasMs() - hrac.poslPosun > 30000) {
+            if (hrac.baba) {
+                predejBabu = true; //pokud ma neaktivni hrac babu, musim ji predat aktivnimu
+            }
+            hraci.splice(i, 1); //vyrazeni prvku s indexem i ze seznamu
+        }
+    }
+    if (predejBabu && hraci.length > 0) { //predani baby, pokud je aspon jeden hrac aktivni
+        hraci[0].baba = true;
+        hracBaba = hraci[0];
+    }
+}
+setInterval(vyradNeaktivniHrace, 10000);
